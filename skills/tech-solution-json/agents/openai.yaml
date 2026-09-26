@@ -1,0 +1,4 @@
+interface:
+  display_name: "技术方案数据填写"
+  short_description: "按字段说明和上下文填充 技术方案数据骨架"
+  default_prompt: "Use $tech-solution-json to fill this JSON from the conversation context."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Word 模板编译器"
+  short_description: "用 JSON 数据填充 Word 模板，字段内容按上下文自动生成"
+  default_prompt: "Use $wordfill to fill this Word template from the conversation context."

@@ -1,0 +1,136 @@
+{
+  "_字段说明": "本文件同时是示例数据；下划线开头的键不会写入文档。",
+  "方案名称": "商户信息管理优化方案",
+  "文档编号": "TS-2026-0917",
+  "版本": "V1.0",
+  "编制人": "张三",
+  "编制日期": "2026-09-17",
+  "评审状态": "待评审",
+  "需求来源": "商户管理平台需求单 2026-0917",
+  "需求背景": "现有商户进件仅支持行内渠道，外部 API 接入渠道无法登记申请来源，商户作废后也没有留痕，排查历史问题时缺少依据。",
+  "改造目标": "在商户主表与审核表补充申请来源与作废原因字段，新增商户进件、查询、作废三个外围接口，并保证存量数据兼容。",
+  "涉及工程": "dceppay、dceppay-file、dceppay-batch",
+  "改造清单": {
+    "表头": {
+      "工程": "2.6cm",
+      "模块或类": "4.6cm",
+      "改造说明": "6.6cm",
+      "类型": "1.6cm"
+    },
+    "字号": 9.5,
+    "合并列": [
+      "工程"
+    ],
+    "行": [
+      {
+        "工程": "dceppay",
+        "模块或类": "SmartMerchantController",
+        "改造说明": "新增 merchantIntake、merchantIntakeQuery、merchantCancel 外围入口。",
+        "类型": "新增"
+      },
+      {
+        "工程": "dceppay",
+        "模块或类": "MerchantIntakeService",
+        "改造说明": "新增商户进件受理服务，校验参数并写入申请来源 request_source。",
+        "类型": "新增"
+      },
+      {
+        "工程": "dceppay",
+        "模块或类": "MerchantAuditService",
+        "改造说明": "商户审核通过/退回时补充记录审核流水，原有接口保持不变。",
+        "类型": "修改"
+      },
+      {
+        "工程": "dceppay-file",
+        "模块或类": "MerchantFileHandler",
+        "改造说明": "附件上传增加影像文件类型校验。",
+        "类型": "修改"
+      },
+      {
+        "工程": "dceppay-batch",
+        "模块或类": "MerchantCancelJob",
+        "改造说明": "新增商户作废批处理任务，作废原因写入 cancel_reason。",
+        "类型": "新增"
+      }
+    ]
+  },
+  "需要数据库变更": true,
+  "字段清单": {
+    "表头": {
+      "表名": "4.0cm",
+      "字段": "3.1cm",
+      "类型": "2.6cm",
+      "默认值": "1.7cm",
+      "说明": "4.0cm"
+    },
+    "合并列": [
+      "表名"
+    ],
+    "行": [
+      {
+        "表名": "icbc_merchant_audit",
+        "字段": "request_source",
+        "类型": "varchar(16)",
+        "默认值": "MNG",
+        "说明": "申请来源：MNG 或 EXTERNAL_API。"
+      },
+      {
+        "表名": "icbc_merchant",
+        "字段": "request_source",
+        "类型": "varchar(16)",
+        "默认值": "MNG",
+        "说明": "商户原始申请来源。"
+      },
+      {
+        "表名": "icbc_merchant",
+        "字段": "cancel_reason",
+        "类型": "varchar(256)",
+        "默认值": "NULL",
+        "说明": "最近一次商户作废原因，允许为空。"
+      }
+    ]
+  },
+  "sql_for_database_modification": "ALTER TABLE icbc_merchant\n    ADD COLUMN request_source varchar(16) DEFAULT 'MNG';\nALTER TABLE icbc_merchant\n    ADD COLUMN cancel_reason varchar(256);\nALTER TABLE icbc_merchant_audit\n    ADD COLUMN request_source varchar(16) DEFAULT 'MNG';",
+  "接口清单": {
+    "表头": {
+      "接口名": "4.4cm",
+      "方法": "2.4cm",
+      "说明": "6.6cm",
+      "类型": "2.0cm"
+    },
+    "行": [
+      {
+        "接口名": "merchantIntake",
+        "方法": "POST",
+        "说明": "商户进件受理入口。",
+        "类型": "新增"
+      },
+      {
+        "接口名": "merchantIntakeQuery",
+        "方法": "POST",
+        "说明": "按申请流水查询进件结果。",
+        "类型": "新增"
+      },
+      {
+        "接口名": "merchantCancel",
+        "方法": "POST",
+        "说明": "商户作废并记录作废原因。",
+        "类型": "新增"
+      }
+    ]
+  },
+  "风险": [
+    {
+      "内容": "存量商户的 request_source 为空导致查询异常。",
+      "应对": "上线脚本按 MNG 回填存量数据，并在查询侧兼容空值。"
+    },
+    {
+      "内容": "作废接口被重复调用产生多条流水。",
+      "应对": "按商户号加锁并做幂等校验。"
+    }
+  ],
+  "需要停机": false,
+  "停机窗口": "",
+  "回滚方案": "停止新接口流量，回退应用版本；新增字段保留不使用，不影响存量功能。",
+  "测试要点": "1. 行内与外部 API 两种来源进件，校验 request_source 落库值。\n2. 商户作废后 cancel_reason 是否正确记录、重复作废是否幂等。\n3. 存量数据回填后查询、导出功能是否正常。\n4. 附件上传非法类型是否被拦截。"
+}

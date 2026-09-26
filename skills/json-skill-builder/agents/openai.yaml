@@ -1,0 +1,4 @@
+interface:
+  display_name: "JSON 字段 Skill 生成器"
+  short_description: "用 JSON 骨架和字段描述生成专用填充 skill"
+  default_prompt: "Use $json-skill-builder to turn this JSON skeleton and field descriptions into a filling skill."

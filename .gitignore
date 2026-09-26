@@ -1,0 +1,47 @@
+# Python 缓存与本地环境
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 测试生成物
+_临时/
+
+# 分发包与构建产物
+/Skill安装包/
+*.zip
+/build/
+/dist/
+*.egg-info/
+
+# 示例成品可由源码重新生成；保留输入模板、JSON 和图片
+/示例成品/
+/工具-Word模板编译器/示例/*结果*.docx
+/工具-Word模板编译器/示例/*结果*.pdf
+
+# 将自己的数据、文档输出放在这些目录中
+/output/
+/outputs/
+/local/
+*_已填充.docx
+*_已填充.pdf
+
+# Office、操作系统及编辑器临时文件
+~$*
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# 本地配置和凭据
+.env
+.env.*
+!.env.example
