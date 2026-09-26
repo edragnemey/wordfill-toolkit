@@ -3,6 +3,8 @@
 在 Word 文档里写 `{{字段}}`，用一份 JSON 数据一次性替换全部内容，版式和格式保持不变。
 适合合同、通知、报价单、证明、验收单这类「大部分固定、少数字段变化」的文档。
 
+**[▶ Bilibili 视频教程](https://www.bilibili.com/video/BV1xNhX6BEFL/)** · [新手跟做与常见问题](../docs/快速上手.md) · [综合示例](示例/智能办公空间/README.md)
+
 ## 运行环境
 
 - Python 3.10 或以上（Windows / macOS / Linux 都可以）
